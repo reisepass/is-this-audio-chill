@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Is This Audio Chill?</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Is This Audio Chill?</h1>
+            <p>Analyze audio files to determine if they're suitable for sleep playlists</p>
+        </header>
+
+        <section class="input-section">
+            <input type="file" id="audioFile" accept="audio/*">
+            <label for="audioFile">Choose Audio File</label>
+            <div id="fileInfo"></div>
+        </section>
+
+        <section class="results-section" id="results" style="display: none;">
+            <div class="visualization-section">
+                <h2>Loudness Over Time (RMS per second)</h2>
+                <canvas id="amplitudeCanvas"></canvas>
+                <div id="nonCalmSections"></div>
+                <div id="topRMSSections"></div>
+            </div>
+
+            <div class="visualization-section">
+                <h2>RMS Energy Over Time</h2>
+                <canvas id="rmsCanvas"></canvas>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <h3>Volume Variance</h3>
+                    <div class="metric-value" id="volumeVariance">--</div>
+                    <div class="metric-status" id="volumeVarianceStatus"></div>
+                </div>
+                <div class="metric-card">
+                    <h3>Dynamic Range</h3>
+                    <div class="metric-value" id="dynamicRange">--</div>
+                    <div class="metric-status" id="dynamicRangeStatus"></div>
+                </div>
+                <div class="metric-card">
+                    <h3>Max Peak Ratio</h3>
+                    <div class="metric-value" id="peakRatio">--</div>
+                    <div class="metric-status" id="peakRatioStatus"></div>
+                </div>
+            </div>
+
+            <div class="score-card">
+                <h2>Overall Calmness Score</h2>
+                <div class="score-display">
+                    <div class="score-value" id="calmnessScore">--</div>
+                    <div class="score-label">/ 100</div>
+                </div>
+                <div class="score-description" id="scoreDescription"></div>
+            </div>
+        </section>
+
+        <div id="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Analyzing audio...</p>
+        </div>
+    </div>
+
+    <div id="audioPlayerContainer" style="display: none;">
+        <div style="max-width: 1200px; margin: 0 auto;">
+            <h3>Audio Player</h3>
+            <audio id="audioPlayer" controls>
+                Your browser does not support the audio element.
+            </audio>
+
+            <div id="liveVisualizationContainer" style="display: none; margin-top: 20px;">
+                <h3>Live Playback Visualization</h3>
+                <p style="font-size: 0.9em; color: #666; margin-bottom: 10px;">Synced with audio player - shows current playback position</p>
+                <canvas id="liveCanvas"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="audio-analyzer.js"></script>
+    <script src="visualizer.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>

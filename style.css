@@ -1,0 +1,320 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+    padding-bottom: 400px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+header {
+    text-align: center;
+    color: white;
+    margin-bottom: 30px;
+}
+
+header h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+}
+
+header p {
+    font-size: 1.1em;
+    opacity: 0.9;
+}
+
+.input-section {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+label, input[type="file"] + button, #analyzeBtn {
+    display: inline-block;
+    padding: 12px 30px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background 0.3s;
+    margin: 5px;
+}
+
+#analyzeBtn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+label:hover, button:not(:disabled):hover {
+    background: #5568d3;
+}
+
+#fileInfo {
+    margin-top: 15px;
+    color: #666;
+}
+
+#audioPlayerContainer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2);
+    border-top: 3px solid #667eea;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+#audioPlayerContainer h3 {
+    margin: 0 0 10px 0;
+    color: #333;
+    font-size: 1.1em;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#audioPlayer {
+    width: 100%;
+    outline: none;
+}
+
+#liveVisualizationContainer {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 2px solid #ddd;
+}
+
+#liveVisualizationContainer h3 {
+    margin: 0 0 5px 0;
+    color: #333;
+    font-size: 1em;
+}
+
+#liveVisualizationContainer p {
+    margin: 0 0 10px 0;
+}
+
+.results-section {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.score-card {
+    text-align: center;
+    padding: 30px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 10px;
+    margin-bottom: 30px;
+}
+
+.score-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.score-value {
+    font-size: 5em;
+    font-weight: bold;
+}
+
+.score-label {
+    font-size: 2em;
+    margin-left: 10px;
+    opacity: 0.8;
+}
+
+.score-description {
+    font-size: 1.2em;
+    opacity: 0.9;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.metric-card {
+    padding: 20px;
+    background: #f7f7f7;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.metric-card h3 {
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 1em;
+}
+
+.metric-value {
+    font-size: 2em;
+    font-weight: bold;
+    color: #667eea;
+    margin-bottom: 5px;
+}
+
+.metric-status {
+    font-size: 0.9em;
+    color: #666;
+}
+
+.visualization-section {
+    margin-bottom: 30px;
+}
+
+.visualization-section h2 {
+    color: #333;
+    margin-bottom: 15px;
+    font-size: 1.3em;
+}
+
+canvas {
+    width: 100%;
+    height: 200px;
+    background: #f9f9f9;
+    border-radius: 5px;
+    display: block;
+}
+
+#spectrogramCanvas {
+    height: 300px;
+}
+
+#nonCalmSections {
+    margin-top: 15px;
+    padding: 15px;
+    background: #fff3cd;
+    border-left: 4px solid #ffc107;
+    border-radius: 5px;
+}
+
+#topRMSSections {
+    margin-top: 15px;
+    padding: 15px;
+    background: #e3f2fd;
+    border-left: 4px solid #2196f3;
+    border-radius: 5px;
+}
+
+#nonCalmSections h3 {
+    color: #856404;
+    margin-bottom: 10px;
+    font-size: 1em;
+}
+
+#topRMSSections h3 {
+    color: #0d47a1;
+    margin-bottom: 10px;
+    font-size: 1em;
+}
+
+#topRMSSections p {
+    color: #1565c0;
+}
+
+.time-range {
+    display: inline-block;
+    padding: 5px 10px;
+    background: white;
+    border-radius: 3px;
+    margin: 3px;
+    font-family: monospace;
+}
+
+.time-range.clickable {
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid #ffc107;
+}
+
+.time-range.clickable:hover {
+    background: #667eea;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.time-range.worst {
+    background: #ffecb3;
+    border: 2px solid #ff9800;
+    font-weight: bold;
+}
+
+.time-range.worst:hover {
+    background: #ff9800;
+    border-color: #f57c00;
+}
+
+.time-range.top-rms {
+    background: #bbdefb;
+    border: 2px solid #2196f3;
+    font-weight: bold;
+}
+
+.time-range.top-rms:hover {
+    background: #2196f3;
+    border-color: #1976d2;
+    color: white;
+}
+
+.spike-value {
+    font-size: 0.85em;
+    opacity: 0.8;
+    font-weight: normal;
+    margin-left: 3px;
+}
+
+#loading {
+    text-align: center;
+    color: white;
+    padding: 50px;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.status-good { color: #28a745; }
+.status-warning { color: #ffc107; }
+.status-bad { color: #dc3545; }
