@@ -318,3 +318,163 @@ canvas {
 .status-good { color: #28a745; }
 .status-warning { color: #ffc107; }
 .status-bad { color: #dc3545; }
+
+/* Calmification Controls */
+#calmificationControls label {
+    font-weight: 500;
+    color: #333;
+}
+
+#calmificationControls input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #667eea;
+}
+
+#calmificationControls select {
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+#calmificationControls select:enabled {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    font-weight: 500;
+}
+
+#calmificationControls select:enabled:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+#calmificationControls select:disabled {
+    background: #e9ecef;
+    color: #6c757d;
+    cursor: not-allowed;
+}
+
+#calmificationControls button {
+    transition: all 0.2s;
+}
+
+#calmificationControls button:enabled {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    font-weight: 500;
+}
+
+#calmificationControls button:enabled:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+#calmificationControls button:disabled {
+    background: #e9ecef;
+    color: #6c757d;
+    cursor: not-allowed;
+}
+
+/* Advanced Controls */
+#advancedControls {
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#advancedControls .control-group {
+    background: white;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #e0e0e0;
+}
+
+#advancedControls input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(to right, #667eea, #764ba2);
+    outline: none;
+    cursor: pointer;
+}
+
+#advancedControls input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: white;
+    border: 3px solid #667eea;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s;
+}
+
+#advancedControls input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    border-color: #764ba2;
+}
+
+#advancedControls input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: white;
+    border: 3px solid #667eea;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s;
+}
+
+#advancedControls input[type="range"]::-moz-range-thumb:hover {
+    transform: scale(1.2);
+    border-color: #764ba2;
+}
+
+#advancedControls button {
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+#advancedControls button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+#resetToPreset {
+    background: #667eea;
+}
+
+#resetToPreset:hover {
+    background: #5568d3;
+}
+
+#saveAsCustom {
+    background: #28a745;
+}
+
+#saveAsCustom:hover {
+    background: #218838;
+}
+
+/* White Noise Enable Button */
+#enableWhiteNoise:checked + span {
+    font-weight: 700;
+}
+
+#enableWhiteNoise:checked {
+    transform: scale(1.1);
+}

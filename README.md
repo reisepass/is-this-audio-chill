@@ -49,7 +49,9 @@ A fast, browser-based utility to analyze audio files and determine if they're su
 4. Scroll through the visualizations and metrics while audio player follows you
 5. **Click any timestamp** (non-calm or top RMS) to jump 3 seconds before that section
 6. Watch the **Live Playback Visualization** in the footer to see the playhead move in sync with audio
-7. View the overall **Calmness Score** at the bottom after reviewing all details
+7. **Enable real-time calmification** to apply audio processing on-the-fly (compression, filtering)
+8. Choose between **Gentle**, **Moderate**, or **Aggressive** presets to control processing intensity
+9. View the overall **Calmness Score** at the bottom after reviewing all details
 
 ## Scoring System
 
@@ -70,6 +72,134 @@ Where each component is normalized 0-1:
 - **60-79**: Moderately calm - Good for relaxation
 - **40-59**: Somewhat calm - May have variations
 - **0-39**: Not calm - Not recommended for sleep
+
+## Real-Time Audio Calmification
+
+The web app includes real-time audio processing using the Web Audio API, allowing you to hear the effects of calmification immediately without re-encoding files.
+
+### Features
+
+- **Toggle on/off**: Enable or disable processing in real-time
+- **Three presets**: Quick access to predefined settings (Gentle, Moderate, Aggressive)
+- **Advanced controls**: Fine-tune all processing parameters individually
+- **Custom preset**: Save your own custom settings
+- **Zero latency**: Instant audio processing in the browser
+- **Compare easily**: Switch between original and processed audio on-the-fly
+
+### Presets
+
+**Gentle** - Light processing for already calm audio:
+- Compressor: threshold=-32dB, ratio=2:1, attack=20ms, release=800ms
+- Low-pass filter: 6000 Hz
+- High-pass filter: 80 Hz
+
+**Moderate** (Default) - Balanced processing:
+- Compressor: threshold=-28dB, ratio=3:1, attack=10ms, release=500ms
+- Low-pass filter: 4500 Hz
+- High-pass filter: 80 Hz
+
+**Aggressive** - Heavy compression for very dynamic audio:
+- Compressor: threshold=-24dB, ratio=4:1, attack=5ms, release=300ms
+- Low-pass filter: 3500 Hz
+- High-pass filter: 100 Hz
+
+**Custom** - Your own saved settings
+
+### Advanced Controls
+
+Click the "⚙️ Advanced" button to access detailed parameter controls:
+
+#### Compressor Settings
+- **Threshold** (-60dB to -10dB): Volume level where compression starts. Lower = more compression kicks in.
+- **Ratio** (1:1 to 20:1): How much compression is applied. Higher = stronger compression.
+- **Attack** (0-100ms): How quickly compression starts when threshold is exceeded.
+- **Release** (10-2000ms): How quickly compression stops after level drops below threshold.
+
+#### Filter Settings
+- **Low-pass Filter** (1000-10000 Hz): Removes high frequencies above this point. Lower = more muffled/calmer.
+- **High-pass Filter** (20-300 Hz): Removes low frequencies below this point. Higher = less bass rumble.
+
+#### White Noise Masking (Fill Silent Moments)
+Adds white noise to prevent jarring silences that could startle during sleep.
+
+**Enable White Noise:**
+- Toggle the "Enable White Noise" checkbox to turn masking on/off
+- All settings appear when enabled
+
+**Basic Mode:**
+- **White Noise Volume** (5-100%, default 30%): Amount of constant white noise
+- Set to desired level for consistent background sound
+
+**Dynamic Mode:**
+- **Dynamic Mode Checkbox**: Enables intelligent noise that only appears during quiet sections
+- **Anticipation** (0-20 dB): How early to start fading in (higher = earlier)
+- **Quiet Threshold** (-70 to -20 dB): Determines what counts as "quiet"
+  - Lower = more sensitive (activates more often)
+  - Higher = less sensitive (only during very quiet moments)
+- **Fade In Speed** (0.2-3 seconds): How quickly noise appears
+  - Shorter = faster response, fills silences immediately
+  - Default: 0.8s for quick response
+- **Fade Out Speed** (0.5-5 seconds): How gradually noise disappears
+  - Longer = smoother transitions
+  - Default: 2s for gradual fade
+
+**How Dynamic Mode Works:**
+1. Continuously monitors audio levels in real-time (~60fps)
+2. Detects when volume is trending downward (getting quieter)
+3. **Anticipates** silence and starts fading in BEFORE it becomes quiet
+4. When volume rises above threshold, white noise gradually fades out
+5. Prevents sudden silences that could wake you up
+
+#### Workflow
+1. Start with a preset (Gentle/Moderate/Aggressive)
+2. Click "Advanced" to fine-tune parameters
+3. Adjust sliders in real-time while listening
+4. Enable white noise to fill quiet moments
+5. Try Dynamic Mode for automatic quiet section filling
+6. Click "Save as Custom" to store your settings
+7. Click "Reset to Preset" to return to the selected preset
+8. Click "💾 Render & Download" to export processed audio as a WAV file
+
+### Processing Chain
+
+```
+Audio Element → DynamicsCompressor → MidrangeCut → LowPassFilter → HighPassFilter → OutputGain → Analyser → Destination
+                                                                                                    ↓
+White Noise Generator → WhiteNoiseGain (static or dynamic) ────────────────────────────────────→ Destination
+```
+
+### How It Works
+
+1. **DynamicsCompressor**: Reduces dynamic range by compressing loud sections based on threshold/ratio/knee
+2. **Midrange Cut**: Reduces harsh frequencies around 2.5kHz that can cause listening fatigue
+3. **Low-pass Filter**: Removes harsh high frequencies above cutoff with adjustable Q factor
+4. **High-pass Filter**: Removes low rumble below cutoff with adjustable Q factor
+5. **Output Gain**: Final volume adjustment to compensate for processing
+6. **Analyser**: Monitors audio levels for dynamic white noise (doesn't affect audio)
+7. **White Noise**: Mixed separately, either constant or dynamically responding to quiet sections
+8. All processing happens in real-time with no file modification
+9. All parameters update instantly as you adjust them
+
+### Render & Download Processed Audio
+
+Export your calmified audio as a permanent file that can be used anywhere!
+
+**Features:**
+- Renders all current processing settings into a new audio file
+- Uses OfflineAudioContext for fast, high-quality rendering
+- Includes white noise (static mode only) if enabled
+- Exports as WAV format (lossless, high quality)
+- Progress bar shows rendering status
+- File named automatically as `original_name_calmified.wav`
+
+**How to use:**
+1. Load an audio file and adjust all settings to your liking
+2. Click the "💾 Render & Download Processed Audio" button
+3. Wait for rendering to complete (usually a few seconds)
+4. File downloads automatically to your downloads folder
+5. Use the processed file in any audio player or sleep app!
+
+**Note:** Dynamic white noise mode is not included in renders (only static white noise), since dynamic mode requires real-time analysis. Set white noise to a constant level if you want it in your exported file.
 
 ## Technical Details
 
@@ -127,13 +257,68 @@ rms = sqrt(sum(samples^2) / window_size)
 - Web Workers for background processing
 - Batch file analysis
 
+## Audio Calmification Scripts
+
+Two bash scripts are included to process audio files and make them calmer:
+
+### `calmify.sh` - Simple Processing
+
+Basic script with sensible defaults:
+
+```bash
+./calmify.sh input.mp3                    # Creates input_calmified.mp3
+./calmify.sh input.mp3 output.mp3         # Custom output name
+```
+
+### `calmify-custom.sh` - Advanced Processing
+
+Customizable parameters and presets:
+
+```bash
+# Presets
+./calmify-custom.sh input.mp3 --gentle        # Light processing
+./calmify-custom.sh input.mp3 --moderate      # Default (balanced)
+./calmify-custom.sh input.mp3 --aggressive    # Heavy compression
+
+# Custom parameters
+./calmify-custom.sh input.mp3 \
+  --threshold -32dB \
+  --ratio 4 \
+  --lowpass 3000 \
+  --highpass 100
+
+# See all options
+./calmify-custom.sh --help
+```
+
+### Processing Steps
+
+Both scripts apply:
+1. **Compression** - Reduces dynamic range and volume spikes
+2. **Limiting** - Hard ceiling to prevent peaks
+3. **Loudness normalization** - Consistent perceived volume
+4. **Low-pass filter** - Removes harsh high frequencies (default: 4500Hz)
+5. **High-pass filter** - Removes low rumble (default: 80Hz)
+
+### Requirements
+
+- `ffmpeg` installed (install via `brew install ffmpeg`)
+
+### Workflow
+
+1. Analyze original file: Select in web interface
+2. If score is low, calmify it: `./calmify.sh audio.mp3`
+3. Re-analyze calmified version: Select `audio_calmified.mp3`
+4. Compare scores!
+
 ## Browser Compatibility
 
 Requires modern browser with:
-- Web Audio API
-- Canvas 2D
+- Web Audio API (for analysis and real-time processing)
+- Canvas 2D (for visualizations)
 - ES6+ JavaScript
 - FileReader API
+- AudioContext and DynamicsCompressor support
 
 Tested on:
 - Chrome 90+

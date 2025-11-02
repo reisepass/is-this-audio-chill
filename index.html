@@ -68,7 +68,211 @@
 
     <div id="audioPlayerContainer" style="display: none;">
         <div style="max-width: 1200px; margin: 0 auto;">
-            <h3>Audio Player</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h3 style="margin: 0;">Audio Player</h3>
+                <div id="calmificationControls" style="display: flex; gap: 10px; align-items: center;">
+                    <label style="display: flex; align-items: center; gap: 5px; font-size: 0.9em; cursor: pointer;">
+                        <input type="checkbox" id="enableCalmification" style="cursor: pointer;">
+                        <span>Real-time Calmification</span>
+                    </label>
+                    <select id="calmificationPreset" disabled style="padding: 5px 10px; border-radius: 3px; border: 1px solid #ccc; background: white; cursor: pointer;">
+                        <option value="gentle">Gentle</option>
+                        <option value="moderate" selected>Moderate</option>
+                        <option value="aggressive">Aggressive</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                    <button id="toggleAdvanced" disabled style="padding: 5px 12px; border-radius: 3px; border: 1px solid #ccc; background: white; cursor: pointer; font-size: 0.9em;">⚙️ Advanced</button>
+                </div>
+            </div>
+
+            <div id="advancedControls" style="display: none; background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                <h4 style="margin: 0 0 15px 0; color: #333; font-size: 1em;">Advanced Calmification Settings</h4>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+                    <!-- Compressor Settings -->
+                    <div class="control-group">
+                        <label style="font-weight: 600; font-size: 0.9em; color: #555; display: block; margin-bottom: 8px;">
+                            Compressor Threshold: <span id="thresholdValue">-28</span> dB
+                        </label>
+                        <input type="range" id="threshold" min="-60" max="-10" value="-28" step="1" style="width: 100%;">
+                        <div style="font-size: 0.75em; color: #666; margin-top: 3px;">Lower = more compression</div>
+                    </div>
+
+                    <div class="control-group">
+                        <label style="font-weight: 600; font-size: 0.9em; color: #555; display: block; margin-bottom: 8px;">
+                            Compressor Ratio: <span id="ratioValue">3</span>:1
+                        </label>
+                        <input type="range" id="ratio" min="1" max="20" value="3" step="0.5" style="width: 100%;">
+                        <div style="font-size: 0.75em; color: #666; margin-top: 3px;">Higher = stronger compression</div>
+                    </div>
+
+                    <div class="control-group">
+                        <label style="font-weight: 600; font-size: 0.9em; color: #555; display: block; margin-bottom: 8px;">
+                            Attack: <span id="attackValue">10</span> ms
+                        </label>
+                        <input type="range" id="attack" min="0" max="100" value="10" step="1" style="width: 100%;">
+                        <div style="font-size: 0.75em; color: #666; margin-top: 3px;">How fast compression starts</div>
+                    </div>
+
+                    <div class="control-group">
+                        <label style="font-weight: 600; font-size: 0.9em; color: #555; display: block; margin-bottom: 8px;">
+                            Release: <span id="releaseValue">500</span> ms
+                        </label>
+                        <input type="range" id="release" min="10" max="2000" value="500" step="10" style="width: 100%;">
+                        <div style="font-size: 0.75em; color: #666; margin-top: 3px;">How fast compression stops</div>
+                    </div>
+
+                    <div class="control-group">
+                        <label style="font-weight: 600; font-size: 0.9em; color: #555; display: block; margin-bottom: 8px;">
+                            Compressor Knee: <span id="kneeValue">30</span> dB
+                        </label>
+                        <input type="range" id="knee" min="0" max="40" value="30" step="1" style="width: 100%;">
+                        <div style="font-size: 0.75em; color: #666; margin-top: 3px;">Higher = softer/smoother compression</div>
+                    </div>
+
+                    <!-- Filter Settings -->
+                    <div class="control-group">
+                        <label style="font-weight: 600; font-size: 0.9em; color: #555; display: block; margin-bottom: 8px;">
+                            Low-pass Filter: <span id="lowpassValue">4500</span> Hz
+                        </label>
+                        <input type="range" id="lowpass" min="1000" max="10000" value="4500" step="100" style="width: 100%;">
+                        <div style="font-size: 0.75em; color: #666; margin-top: 3px;">Removes high frequencies above</div>
+                    </div>
+
+                    <div class="control-group">
+                        <label style="font-weight: 600; font-size: 0.9em; color: #555; display: block; margin-bottom: 8px;">
+                            High-pass Filter: <span id="highpassValue">80</span> Hz
+                        </label>
+                        <input type="range" id="highpass" min="20" max="300" value="80" step="10" style="width: 100%;">
+                        <div style="font-size: 0.75em; color: #666; margin-top: 3px;">Removes low frequencies below</div>
+                    </div>
+
+                    <div class="control-group">
+                        <label style="font-weight: 600; font-size: 0.9em; color: #555; display: block; margin-bottom: 8px;">
+                            Low-pass Q Factor: <span id="lowpassQValue">1.0</span>
+                        </label>
+                        <input type="range" id="lowpassQ" min="0.1" max="10" value="1.0" step="0.1" style="width: 100%;">
+                        <div style="font-size: 0.75em; color: #666; margin-top: 3px;">Higher = steeper filter slope</div>
+                    </div>
+
+                    <div class="control-group">
+                        <label style="font-weight: 600; font-size: 0.9em; color: #555; display: block; margin-bottom: 8px;">
+                            High-pass Q Factor: <span id="highpassQValue">1.0</span>
+                        </label>
+                        <input type="range" id="highpassQ" min="0.1" max="10" value="1.0" step="0.1" style="width: 100%;">
+                        <div style="font-size: 0.75em; color: #666; margin-top: 3px;">Higher = steeper filter slope</div>
+                    </div>
+
+                    <!-- Additional Processing -->
+                    <div class="control-group">
+                        <label style="font-weight: 600; font-size: 0.9em; color: #555; display: block; margin-bottom: 8px;">
+                            Stereo Width: <span id="stereoWidthValue">100</span>%
+                        </label>
+                        <input type="range" id="stereoWidth" min="0" max="100" value="100" step="5" style="width: 100%;">
+                        <div style="font-size: 0.75em; color: #666; margin-top: 3px;">Lower = narrower/more mono (calmer)</div>
+                    </div>
+
+                    <div class="control-group">
+                        <label style="font-weight: 600; font-size: 0.9em; color: #555; display: block; margin-bottom: 8px;">
+                            Midrange Cut: <span id="midCutValue">0</span> dB
+                        </label>
+                        <input type="range" id="midCut" min="-20" max="0" value="0" step="1" style="width: 100%;">
+                        <div style="font-size: 0.75em; color: #666; margin-top: 3px;">Reduce harsh mid frequencies (1-4kHz)</div>
+                    </div>
+
+                    <div class="control-group">
+                        <label style="font-weight: 600; font-size: 0.9em; color: #555; display: block; margin-bottom: 8px;">
+                            Output Gain: <span id="outputGainValue">0</span> dB
+                        </label>
+                        <input type="range" id="outputGain" min="-20" max="10" value="0" step="1" style="width: 100%;">
+                        <div style="font-size: 0.75em; color: #666; margin-top: 3px;">Adjust final volume</div>
+                    </div>
+
+                    <!-- White Noise Settings -->
+                    <div class="control-group" style="grid-column: 1 / -1; background: #f0f8ff; border: 2px solid #667eea;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                            <h5 style="margin: 0; color: #667eea; font-size: 0.95em;">🌊 White Noise Masking</h5>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 1em; cursor: pointer; padding: 8px 15px; background: white; border-radius: 5px; border: 2px solid #667eea;">
+                                <input type="checkbox" id="enableWhiteNoise" style="width: 20px; height: 20px; cursor: pointer; accent-color: #667eea;">
+                                <span style="color: #667eea;">Enable White Noise</span>
+                            </label>
+                        </div>
+
+                        <div id="whiteNoiseSettings" style="display: none;">
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+                                <div>
+                                    <label style="font-weight: 600; font-size: 0.9em; color: #555; display: block; margin-bottom: 8px;">
+                                        White Noise Volume: <span id="whiteNoiseVolumeValue">30</span>%
+                                    </label>
+                                    <input type="range" id="whiteNoiseVolume" min="5" max="100" value="30" step="5" style="width: 100%;">
+                                    <div style="font-size: 0.75em; color: #666; margin-top: 3px;">Lower = subtle, higher = more masking</div>
+                                </div>
+
+                                <div>
+                                    <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 0.9em; color: #555;">
+                                        <input type="checkbox" id="dynamicWhiteNoise" style="width: 18px; height: 18px; cursor: pointer;">
+                                        <span>Dynamic Mode</span>
+                                    </label>
+                                    <div style="font-size: 0.75em; color: #666; margin-top: 3px;">Activate only during quiet sections</div>
+                                </div>
+
+                            <div id="dynamicControls" style="display: none; grid-column: 1 / -1;">
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; padding: 10px; background: white; border-radius: 5px; margin-top: 10px;">
+                                    <div>
+                                        <label style="font-weight: 600; font-size: 0.9em; color: #555; display: block; margin-bottom: 8px;">
+                                            Quiet Threshold: <span id="quietThresholdValue">-50</span> dB
+                                        </label>
+                                        <input type="range" id="quietThreshold" min="-70" max="-20" value="-50" step="1" style="width: 100%;">
+                                        <div style="font-size: 0.75em; color: #666; margin-top: 3px;">Lower = more sensitive to quiet</div>
+                                    </div>
+
+                                    <div>
+                                        <label style="font-weight: 600; font-size: 0.9em; color: #555; display: block; margin-bottom: 8px;">
+                                            Fade In Speed: <span id="fadeInTimeValue">0.8</span>s
+                                        </label>
+                                        <input type="range" id="fadeInTime" min="0.2" max="3" value="0.8" step="0.1" style="width: 100%;">
+                                        <div style="font-size: 0.75em; color: #666; margin-top: 3px;">How quickly noise appears</div>
+                                    </div>
+
+                                    <div>
+                                        <label style="font-weight: 600; font-size: 0.9em; color: #555; display: block; margin-bottom: 8px;">
+                                            Fade Out Speed: <span id="fadeOutTimeValue">2.0</span>s
+                                        </label>
+                                        <input type="range" id="fadeOutTime" min="0.5" max="5" value="2.0" step="0.5" style="width: 100%;">
+                                        <div style="font-size: 0.75em; color: #666; margin-top: 3px;">How quickly noise disappears</div>
+                                    </div>
+
+                                    <div>
+                                        <label style="font-weight: 600; font-size: 0.9em; color: #555; display: block; margin-bottom: 8px;">
+                                            Anticipation: <span id="anticipationValue">10</span> dB
+                                        </label>
+                                        <input type="range" id="anticipation" min="0" max="20" value="10" step="2" style="width: 100%;">
+                                        <div style="font-size: 0.75em; color: #666; margin-top: 3px;">Start before quiet (higher = earlier)</div>
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                    <button id="resetToPreset" style="padding: 8px 15px; border-radius: 5px; border: none; background: #667eea; color: white; cursor: pointer; font-size: 0.9em;">Reset to Preset</button>
+                    <button id="saveAsCustom" style="padding: 8px 15px; border-radius: 5px; border: none; background: #28a745; color: white; cursor: pointer; font-size: 0.9em;">Save as Custom</button>
+                    <div style="flex: 1; min-width: 200px; text-align: right;">
+                        <button id="renderAndDownload" style="padding: 10px 20px; border-radius: 5px; border: none; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; cursor: pointer; font-size: 0.95em; font-weight: 600; box-shadow: 0 4px 12px rgba(245, 87, 108, 0.4);">
+                            💾 Render & Download Processed Audio
+                        </button>
+                        <div id="renderProgress" style="display: none; margin-top: 10px; font-size: 0.85em; color: #667eea;">
+                            <div style="background: #e0e0e0; border-radius: 10px; height: 20px; overflow: hidden; margin-bottom: 5px;">
+                                <div id="renderProgressBar" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); height: 100%; width: 0%; transition: width 0.3s;"></div>
+                            </div>
+                            <span id="renderProgressText">Rendering...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <audio id="audioPlayer" controls>
                 Your browser does not support the audio element.
             </audio>
