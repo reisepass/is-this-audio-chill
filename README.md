@@ -188,18 +188,25 @@ Export your calmified audio as a permanent file that can be used anywhere!
 - Renders all current processing settings into a new audio file
 - Uses OfflineAudioContext for fast, high-quality rendering
 - Includes white noise (static mode only) if enabled
-- Exports as WAV format (lossless, high quality)
+- **Two export formats:**
+  - **WebM (Default)**: Compressed format (~128 kbps), much smaller file size, good quality
+  - **WAV**: Lossless format, larger file size, perfect quality
 - Progress bar shows rendering status
-- File named automatically as `original_name_calmified.wav`
+- File named automatically as `original_name_calmified.webm` or `.wav`
 
 **How to use:**
 1. Load an audio file and adjust all settings to your liking
-2. Click the "💾 Render & Download Processed Audio" button
-3. Wait for rendering to complete (usually a few seconds)
-4. File downloads automatically to your downloads folder
-5. Use the processed file in any audio player or sleep app!
+2. Select your preferred export format (WebM for smaller size, WAV for lossless)
+3. Click the "💾 Render & Download Processed Audio" button
+4. Wait for rendering to complete (usually a few seconds)
+5. File downloads automatically to your downloads folder
+6. Use the processed file in any audio player or sleep app!
 
 **Note:** Dynamic white noise mode is not included in renders (only static white noise), since dynamic mode requires real-time analysis. Set white noise to a constant level if you want it in your exported file.
+
+**Format Comparison:**
+- **WebM**: 10-20x smaller files, good for most use cases, compatible with modern players
+- **WAV**: No quality loss, larger files, universal compatibility
 
 ## Technical Details
 

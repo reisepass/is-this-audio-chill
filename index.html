@@ -260,6 +260,13 @@
                     <button id="resetToPreset" style="padding: 8px 15px; border-radius: 5px; border: none; background: #667eea; color: white; cursor: pointer; font-size: 0.9em;">Reset to Preset</button>
                     <button id="saveAsCustom" style="padding: 8px 15px; border-radius: 5px; border: none; background: #28a745; color: white; cursor: pointer; font-size: 0.9em;">Save as Custom</button>
                     <div style="flex: 1; min-width: 200px; text-align: right;">
+                        <div style="margin-bottom: 8px;">
+                            <label style="font-size: 0.85em; color: #555; margin-right: 8px;">Export Format:</label>
+                            <select id="renderFormat" style="padding: 5px 10px; border-radius: 5px; border: 1px solid #ddd; background: white; cursor: pointer; font-size: 0.85em;">
+                                <option value="webm">WebM (Compressed, Smaller)</option>
+                                <option value="wav">WAV (Lossless, Larger)</option>
+                            </select>
+                        </div>
                         <button id="renderAndDownload" style="padding: 10px 20px; border-radius: 5px; border: none; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; cursor: pointer; font-size: 0.95em; font-weight: 600; box-shadow: 0 4px 12px rgba(245, 87, 108, 0.4);">
                             💾 Render & Download Processed Audio
                         </button>

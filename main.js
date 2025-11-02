@@ -1101,21 +1101,35 @@ async function renderAndDownloadAudio() {
         // Render the audio
         const renderedBuffer = await offlineContext.startRendering();
 
-        renderProgressText.textContent = 'Converting to WAV format...';
-        renderProgressBar.style.width = '80%';
+        // Get selected format
+        const formatSelect = document.getElementById('renderFormat');
+        const selectedFormat = formatSelect ? formatSelect.value : 'webm';
 
-        // Convert to WAV
-        const wavBlob = audioBufferToWav(renderedBuffer);
+        let blob;
+        let fileExtension;
+
+        if (selectedFormat === 'wav') {
+            renderProgressText.textContent = 'Converting to WAV format...';
+            renderProgressBar.style.width = '80%';
+            blob = audioBufferToWav(renderedBuffer);
+            fileExtension = 'wav';
+        } else {
+            // WebM format using MediaRecorder
+            renderProgressText.textContent = 'Encoding to compressed format...';
+            renderProgressBar.style.width = '70%';
+            blob = await audioBufferToWebM(renderedBuffer);
+            fileExtension = 'webm';
+        }
 
         renderProgressText.textContent = 'Preparing download...';
         renderProgressBar.style.width = '90%';
 
         // Create download
-        const url = URL.createObjectURL(wavBlob);
+        const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
         const originalName = currentFile.name.replace(/\.[^/.]+$/, '');
-        a.download = `${originalName}_calmified.wav`;
+        a.download = `${originalName}_calmified.${fileExtension}`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -1163,17 +1177,11 @@ function audioBufferToWav(buffer) {
     const bytesPerSample = bitDepth / 8;
     const blockAlign = numberOfChannels * bytesPerSample;
 
-    const data = [];
-    for (let i = 0; i < buffer.length; i++) {
-        for (let channel = 0; channel < numberOfChannels; channel++) {
-            const sample = buffer.getChannelData(channel)[i];
-            const int16 = Math.max(-1, Math.min(1, sample)) * 0x7FFF;
-            data.push(int16 < 0 ? int16 + 0x10000 : int16);
-        }
-    }
-
-    const dataLength = data.length * bytesPerSample;
+    // Use TypedArray instead of regular array to avoid size limits
+    const numSamples = buffer.length * numberOfChannels;
+    const dataLength = numSamples * bytesPerSample;
     const bufferLength = 44 + dataLength;
+
     const arrayBuffer = new ArrayBuffer(bufferLength);
     const view = new DataView(arrayBuffer);
 
@@ -1199,10 +1207,15 @@ function audioBufferToWav(buffer) {
     writeString(view, offset, 'data'); offset += 4;
     view.setUint32(offset, dataLength, true); offset += 4;
 
-    // Write PCM samples
-    for (let i = 0; i < data.length; i++) {
-        view.setInt16(offset, data[i], true);
-        offset += 2;
+    // Write PCM samples directly to DataView (no intermediate array)
+    for (let i = 0; i < buffer.length; i++) {
+        for (let channel = 0; channel < numberOfChannels; channel++) {
+            const sample = buffer.getChannelData(channel)[i];
+            // Clamp to [-1, 1] and convert to 16-bit integer
+            const int16 = Math.max(-1, Math.min(1, sample)) * 0x7FFF;
+            view.setInt16(offset, int16, true);
+            offset += 2;
+        }
     }
 
     return new Blob([arrayBuffer], { type: 'audio/wav' });
@@ -1212,4 +1225,61 @@ function writeString(view, offset, string) {
     for (let i = 0; i < string.length; i++) {
         view.setUint8(offset + i, string.charCodeAt(i));
     }
+}
+
+async function audioBufferToWebM(buffer) {
+    // Create a new AudioContext for playback
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+    // Create a MediaStreamDestination to capture the audio
+    const dest = ctx.createMediaStreamDestination();
+
+    // Create a buffer source and connect it
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    source.connect(dest);
+
+    // Set up MediaRecorder with the best available codec
+    let mimeType = 'audio/webm;codecs=opus';
+    if (!MediaRecorder.isTypeSupported(mimeType)) {
+        mimeType = 'audio/webm';
+    }
+
+    const recorder = new MediaRecorder(dest.stream, {
+        mimeType: mimeType,
+        audioBitsPerSecond: 128000 // 128 kbps for good quality
+    });
+
+    const chunks = [];
+
+    return new Promise((resolve, reject) => {
+        recorder.ondataavailable = (e) => {
+            if (e.data.size > 0) {
+                chunks.push(e.data);
+            }
+        };
+
+        recorder.onstop = () => {
+            const blob = new Blob(chunks, { type: mimeType });
+            ctx.close();
+            resolve(blob);
+        };
+
+        recorder.onerror = (e) => {
+            ctx.close();
+            reject(new Error('MediaRecorder error: ' + e.error));
+        };
+
+        // Start recording
+        recorder.start();
+
+        // Play the buffer
+        source.start(0);
+
+        // Stop recording after the buffer duration plus a small buffer
+        const duration = buffer.duration;
+        setTimeout(() => {
+            recorder.stop();
+        }, (duration + 0.5) * 1000);
+    });
 }
